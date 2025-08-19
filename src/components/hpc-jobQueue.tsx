@@ -67,6 +67,12 @@ const mockJobs = [
 export function JobQueue() {
   const [searchTerm, setSearchTerm] = useState("")
   const [statusFilter, setStatusFilter] = useState("all")
+  const [jobs, setJobs] = useState(mockJobs);
+
+  const handleRefresh = () => {
+    // this is supposed to be API call for fetching jobs data 
+      setJobs([...mockJobs]); 
+    }
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -82,8 +88,22 @@ export function JobQueue() {
         return <Badge variant="secondary">{status}</Badge>
     }
   }
+  const handlePause = (id: string) => {
+    // this is supposed to be API call for pausing job
+  setJobs(jobs.map(job => job.id === id ? { ...job, status: 'queued' } : job));
+  }
 
-  const filteredJobs = mockJobs.filter((job) => {
+const handlePlay = (id: string) => {
+   // this is supposed to be API call for playing job
+  setJobs(jobs.map(job => job.id === id ? { ...job, status: 'running' } : job));
+  }
+
+const handleCancel = (id: string) => {
+   // this is supposed to be API call for canceling job
+  setJobs(jobs.map(job => job.id === id ? { ...job, status: 'failed' } : job));
+  }
+
+  const filteredJobs = jobs.filter((job) => {
     const matchesSearch =
       job.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       job.user.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -119,7 +139,7 @@ export function JobQueue() {
                 <SelectItem value="failed">Failed</SelectItem>
               </SelectContent>
             </Select>
-            <Button variant="outline" className="flex items-center gap-2 bg-transparent">
+            <Button variant="outline" className="flex items-center gap-2 bg-transparent" onClick={handleRefresh}>
               <RefreshCw className="h-4 w-4" />
               Refresh
             </Button>
@@ -141,41 +161,41 @@ export function JobQueue() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredJobs.map((job) => (
-                  <TableRow key={job.id}>
-                    <TableCell className="font-mono text-sm">{job.id}</TableCell>
-                    <TableCell className="font-medium">{job.name}</TableCell>
-                    <TableCell className="text-sm">{job.user}</TableCell>
-                    <TableCell>{getStatusBadge(job.status)}</TableCell>
+                {filteredJobs.map((jobs) => (
+                  <TableRow key={jobs.id}>
+                    <TableCell className="font-mono text-sm">{jobs.id}</TableCell>
+                    <TableCell className="font-medium">{jobs.name}</TableCell>
+                    <TableCell className="text-sm">{jobs.user}</TableCell>
+                    <TableCell>{getStatusBadge(jobs.status)}</TableCell>
                     <TableCell>
-                      <Badge variant="outline">{job.queue}</Badge>
+                      <Badge variant="outline">{jobs.queue}</Badge>
                     </TableCell>
                     <TableCell className="text-sm">
                       <div>
-                        {job.nodes}N / {job.cpus}C
+                        {jobs.nodes}N / {jobs.cpus}C
                       </div>
-                      <div className="text-muted-foreground">{job.memory}</div>
+                      <div className="text-muted-foreground">{jobs.memory}</div>
                     </TableCell>
                     <TableCell className="text-sm">
                       <div>
-                        {job.timeUsed} / {job.timeLimit}
+                        {jobs.timeUsed} / {jobs.timeLimit}
                       </div>
-                      <div className="text-muted-foreground">{job.submitTime}</div>
+                      <div className="text-muted-foreground">{jobs.submitTime}</div>
                     </TableCell>
                     <TableCell>
                       <div className="flex gap-1">
-                        {(job.status === "running" || job.status === "queued") && (
-                          <Button size="sm" variant="outline" className="h-8 w-8 p-0 bg-transparent">
+                        {(jobs.status === "running" || jobs.status === "queued") && (
+                          <Button size="sm" variant="outline" className="h-8 w-8 p-0 bg-transparent" onClick={()=>handleCancel(jobs.id)}>
                             <X className="h-3 w-3" />
                           </Button>
                         )}
-                        {job.status === "queued" && (
-                          <Button size="sm" variant="outline" className="h-8 w-8 p-0 bg-transparent">
+                        {jobs.status === "queued" && (
+                          <Button size="sm" variant="outline" className="h-8 w-8 p-0 bg-transparent" onClick={() => handlePlay(jobs.id)}>
                             <Play className="h-3 w-3" />
                           </Button>
                         )}
-                        {job.status === "running" && (
-                          <Button size="sm" variant="outline" className="h-8 w-8 p-0 bg-transparent">
+                        {jobs.status === "running" && (
+                          <Button size="sm" variant="outline" className="h-8 w-8 p-0 bg-transparent" onClick={() => handlePause(jobs.id)}>
                             <Pause className="h-3 w-3" />
                           </Button>
                         )}
