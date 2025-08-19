@@ -4,7 +4,7 @@ import { useState } from "react"
 import { HPCSidebar } from "@/components/hpc-sidebar"
 // import { DashboardOverview } from "@/components/dashboard-overview"
 import { JobQueue } from "@/components/hpc-jobQueue"
-// import { JobSubmit } from "@/components/job-submit"
+import { JobSubmit } from "@/components/hpc-JobSubmit"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 export default function HPCDashboard() {
@@ -17,8 +17,8 @@ export default function HPCDashboard() {
         //return <DashboardOverview />
       case "jobs":
         return <JobQueue />
-      // case "submit":
-      //   return <JobSubmit />
+      case "submit":
+        return <JobSubmit />
       case "resources":
         return (
           <Card>
