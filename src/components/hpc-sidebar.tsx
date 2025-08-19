@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Server, Activity, Users, Settings, BarChart3, PlayCircle, Menu, X } from "lucide-react"
-
+import { ClusterStatus } from "./hpc-clusterStatus"
 interface SidebarProps {
   activeTab: string
   onTabChange: (tab: string) => void
@@ -78,15 +78,7 @@ export function HPCSidebar({ activeTab, onTabChange }: SidebarProps) {
         {/* Status */}
         {!isCollapsed && (
           <div className="p-4 border-t border-sidebar-border">
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">Cluster Status</span>
-                <Badge variant="secondary" className="bg-green-100 text-green-800">
-                  Online
-                </Badge>
-              </div>
-              <div className="text-xs text-muted-foreground">24/32 nodes active</div>
-            </div>
+            <ClusterStatus></ClusterStatus>
           </div>
         )}
       </div>
