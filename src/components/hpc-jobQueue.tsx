@@ -9,65 +9,14 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from ".
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select"
 import { Search, RefreshCw, X, Play, Pause } from "lucide-react"
 
-const mockJobs = [
-  {
-    id: "HPC-2024-0156",
-    name: "Molecular Dynamics Simulation",
-    user: "dr.hassan@bibalex.org",
-    status: "running",
-    queue: "gpu",
-    nodes: 4,
-    cpus: 32,
-    memory: "128GB",
-    timeLimit: "24:00:00",
-    timeUsed: "02:45:12",
-    submitTime: "2024-01-15 09:30:00",
-  },
-  {
-    id: "HPC-2024-0157",
-    name: "Climate Model Analysis",
-    user: "research.team@bibalex.org",
-    status: "queued",
-    queue: "compute",
-    nodes: 8,
-    cpus: 64,
-    memory: "256GB",
-    timeLimit: "48:00:00",
-    timeUsed: "00:00:00",
-    submitTime: "2024-01-15 10:15:00",
-  },
-  {
-    id: "HPC-2024-0158",
-    name: "Protein Folding Study",
-    user: "bio.lab@bibalex.org",
-    status: "completed",
-    queue: "gpu",
-    nodes: 2,
-    cpus: 16,
-    memory: "64GB",
-    timeLimit: "12:00:00",
-    timeUsed: "08:23:45",
-    submitTime: "2024-01-15 08:00:00",
-  },
-  {
-    id: "HPC-2024-0159",
-    name: "Neural Network Training",
-    user: "ai.research@bibalex.org",
-    status: "failed",
-    queue: "gpu",
-    nodes: 1,
-    cpus: 8,
-    memory: "32GB",
-    timeLimit: "06:00:00",
-    timeUsed: "01:15:30",
-    submitTime: "2024-01-15 11:00:00",
-  },
-]
+import mockJobs from "@/mockData/mockJobs"
+import { JobDetails } from "./hpc-jobDetails"
 
 export function JobQueue() {
   const [searchTerm, setSearchTerm] = useState("")
   const [statusFilter, setStatusFilter] = useState("all")
   const [jobs, setJobs] = useState(mockJobs);
+  const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
 
   const handleRefresh = () => {
     // this is supposed to be API call for fetching jobs data 
@@ -114,6 +63,9 @@ const handleCancel = (id: string) => {
 
   return (
     <div className="space-y-6">
+      {selectedJobId ? (
+  <JobDetails jobId={selectedJobId} onBack={() => setSelectedJobId(null)} />
+) : (
       <Card>
         <CardHeader>
           <CardTitle>Job Queue Management</CardTitle>
@@ -163,8 +115,8 @@ const handleCancel = (id: string) => {
               <TableBody>
                 {filteredJobs.map((jobs) => (
                   <TableRow key={jobs.id}>
-                    <TableCell className="font-mono text-sm">{jobs.id}</TableCell>
-                    <TableCell className="font-medium">{jobs.name}</TableCell>
+                    <TableCell className="font-mono text-sm"  onClick={()=>setSelectedJobId(jobs.id)}>{jobs.id}</TableCell>
+                    <TableCell className="font-medium"  onClick={()=>setSelectedJobId(jobs.id)}>{jobs.name}</TableCell>
                     <TableCell className="text-sm">{jobs.user}</TableCell>
                     <TableCell>{getStatusBadge(jobs.status)}</TableCell>
                     <TableCell>
@@ -208,6 +160,7 @@ const handleCancel = (id: string) => {
           </div>
         </CardContent>
       </Card>
+      )}
     </div>
   )
 }
