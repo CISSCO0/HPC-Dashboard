@@ -4,17 +4,17 @@ import { useState } from "react"
 import { HPCSidebar } from "@/components/hpc-sidebar"
 // import { DashboardOverview } from "@/components/dashboard-overview"
 import { JobQueue } from "@/components/hpc-jobQueue"
-import { JobSubmit } from "@/components/hpc-JobSubmit"
+import { JobSubmit } from "@/components/hpc-jobSubmit"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-
+import { HpcDashboard } from "@/components/hpc-dashboard"
 export default function HPCDashboard() {
   const [activeTab, setActiveTab] = useState("dashboard")
 
   const renderContent = () => {
 
    switch (activeTab) {
-      //case "dashboard":
-        //return <DashboardOverview />
+      case "dashboard":
+        return <HpcDashboard />
       case "jobs":
         return <JobQueue />
       case "submit":

@@ -11,6 +11,8 @@ import { Search, RefreshCw, X, Play, Pause } from "lucide-react"
 
 import mockJobs from "@/mockData/mockJobs"
 import { JobDetails } from "./hpc-jobDetails"
+import CancelJobButton from "./hpc-cancelJobButton"
+
 
 export function JobQueue() {
   const [searchTerm, setSearchTerm] = useState("")
@@ -40,18 +42,30 @@ export function JobQueue() {
   const handlePause = (id: string) => {
     // this is supposed to be API call for pausing job
   setJobs(jobs.map(job => job.id === id ? { ...job, status: 'queued' } : job));
+  mockJobs.find(job => job.id === id)!.status = 'queued'; 
   }
 
 const handlePlay = (id: string) => {
    // this is supposed to be API call for playing job
   setJobs(jobs.map(job => job.id === id ? { ...job, status: 'running' } : job));
+  mockJobs.find(job => job.id === id)!.status = 'running';
   }
 
-const handleCancel = (id: string) => {
-   // this is supposed to be API call for canceling job
-  setJobs(jobs.map(job => job.id === id ? { ...job, status: 'failed' } : job));
+const handleCancel = (id: string):void => {
+  // this is supposed to be API call for cancelling job
+  setJobs(prevJobs =>
+    prevJobs.map(job => (job.id === id ? { ...job, status: "failed" } : job))
+  );
+
+  // Update mock data (if needed)
+  const jobIndex = mockJobs.findIndex(job => job.id === id);
+  if (jobIndex !== -1) {
+    mockJobs[jobIndex] = { ...mockJobs[jobIndex], status: "failed" };
   }
 
+  // TODO: Replace with API call
+  // fetch(`/api/cancel-job/${id}`, { method: 'POST' })
+};
   const filteredJobs = jobs.filter((job) => {
     const matchesSearch =
       job.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -137,9 +151,9 @@ const handleCancel = (id: string) => {
                     <TableCell>
                       <div className="flex gap-1">
                         {(jobs.status === "running" || jobs.status === "queued") && (
-                          <Button size="sm" variant="outline" className="h-8 w-8 p-0 bg-transparent" onClick={()=>handleCancel(jobs.id)}>
-                            <X className="h-3 w-3" />
-                          </Button>
+                  
+                             <CancelJobButton jobId={jobs.id} onCancel={handleCancel} />
+                      
                         )}
                         {jobs.status === "queued" && (
                           <Button size="sm" variant="outline" className="h-8 w-8 p-0 bg-transparent" onClick={() => handlePlay(jobs.id)}>

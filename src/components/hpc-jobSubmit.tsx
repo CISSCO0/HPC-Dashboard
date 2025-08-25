@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge"
 import { Upload, Send, FileText } from "lucide-react"
 
+import mockJobs from "@/mockData/mockJobs"
 export function JobSubmit() {
   const [jobName, setJobName] = useState("")
   const [queue, setQueue] = useState("")
@@ -21,19 +22,66 @@ export function JobSubmit() {
   const [timeLimit, setTimeLimit] = useState("24:00:00")
   const [script, setScript] = useState("")
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    // Handle job submission logic here
-    console.log("Submitting job:", {
-      jobName,
-      queue,
-      nodes,
-      cpus,
-      memory,
-      timeLimit,
-      script,
-    })
-  }
+ const handleSubmit = (e: React.FormEvent) => {
+  e.preventDefault();
+
+  const newJob:any = {
+    id: `HPC-${Date.now()}`, // unique mock ID
+    name: jobName,
+    user: "current.user@example.com", // replace with logged-in user if available
+    group: "default",
+    account: "default",
+    status: "queued",
+    queue,
+    priority: 500,
+    cpu: Number(cpus),
+    cpus: Number(cpus),
+    gpu: 0,
+    memory: `${memory}GB`,
+    nodes: Number(nodes),
+    timeLimit,
+    timeUsed: "00:00:00",
+    time: "0h 0m",
+    submitted: new Date().toISOString(),
+    started: null,
+    submitTime: new Date().toISOString(),
+    submitLine: `sbatch --job-name=${jobName} --nodes=${nodes} --ntasks-per-node=${cpus} --time=${timeLimit}`,
+    script,
+    workingDirectory: "/home/user",
+    exitCode: "PENDING",
+    partition: queue,
+    qos: "normal",
+    requestedNodes: Number(nodes),
+    requestedCpu: Number(cpus),
+    requestedMemory: `${memory}GB`,
+    allocatedNodes: 0,
+    allocatedCpu: 0,
+    allocatedMemory: "0GB",
+    stages: [
+      { name: "Submitted", completed: true, timestamp: new Date().toISOString() },
+      { name: "Eligible", completed: false, timestamp: null },
+      { name: "Scheduling", completed: false, timestamp: null },
+      { name: "Running", completed: false, timestamp: null },
+      { name: "Completing", completed: false, timestamp: null },
+      { name: "Terminated", completed: false, timestamp: null },
+    ],
+  };
+
+  // Add to mockJobs (for now in-memory)
+  mockJobs.push(newJob);
+
+  // Optionally reset form
+  setJobName("");
+  setQueue("");
+  setNodes("");
+  setCpus("");
+  setMemory("");
+  setTimeLimit("");
+  setScript("");
+
+  alert("Job submitted successfully!");
+};
+
 
   return (
     <div className="space-y-6">
@@ -162,11 +210,11 @@ export function JobSubmit() {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                   <div>
                     <span className="text-muted-foreground">Total CPUs:</span>
-                    <div className="font-medium">{Number.parseInt(nodes) * Number.parseInt(cpus || "0")}</div>
+                    <div className="font-medium">{Number.parseInt(nodes||"0") * Number.parseInt(cpus || "0")}</div>
                   </div>
                   <div>
                     <span className="text-muted-foreground">Total Memory:</span>
-                    <div className="font-medium">{Number.parseInt(nodes) * Number.parseInt(memory || "0")} GB</div>
+                    <div className="font-medium">{Number.parseInt(nodes||"0") * Number.parseInt(memory || "0")} GB</div>
                   </div>
                   <div>
                     <span className="text-muted-foreground">Queue:</span>
@@ -182,7 +230,7 @@ export function JobSubmit() {
 
             {/* Submit Button */}
             <div className="flex justify-end">
-              <Button type="submit" className="flex items-center gap-2">
+              <Button type="submit" className="flex items-center gap-2" onClick={handleSubmit}>
                 <Send className="h-4 w-4" />
                 Submit Job
               </Button>
